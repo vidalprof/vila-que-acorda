@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>EduVerse — A Vila que Acorda</title>
+<style>
+:root{
+  --ouro:#ffd45a; --ouro2:#f0a92e; --tinta:#26405a; --papel:#fffdf6;
+  --byte1:#3fc8d6; --byte2:#2a9fb3;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#eaf7ff;
+  font-family:system-ui,'Segoe UI',Arial,sans-serif;color:#26405a;user-select:none}
+#app{position:fixed;inset:0;overflow:hidden}
+.tela{position:absolute;inset:0;opacity:0;pointer-events:none;transition:opacity .45s ease}
+.tela.on{opacity:1;pointer-events:auto}
+svg{display:block}
+
+/* ---------- CARTÃO DE NOME ---------- */
+#nome{display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#3fc8d6,#2a6fb3);z-index:40}
+.card{background:var(--papel);border-radius:26px;padding:24px 22px;width:86%;max-width:340px;
+  text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.30)}
+.card h1{margin:.1em 0 .05em;font-size:23px;color:#1f5b8a}
+.card p{margin:.2em 0 1em;font-size:14px;color:#5a7690}
+#nin{width:100%;font-size:20px;padding:12px 14px;border:2px solid #cfe3ef;border-radius:14px;
+  text-align:center;color:#26405a;outline:none}
+#nin:focus{border-color:#3fc8d6}
+.btn{margin-top:14px;width:100%;font-size:18px;font-weight:800;color:#fff;border:0;cursor:pointer;
+  background:linear-gradient(180deg,#ffd45a,#f0a92e);
+  padding:14px;border-radius:16px;box-shadow:0 6px 0 #c9862a;transition:transform .08s}
+.btn:active{transform:translateY(3px);box-shadow:0 3px 0 #c9862a}
+
+/* ---------- HUD ---------- */
+.top{position:absolute;top:0;left:0;right:0;height:56px;display:flex;align-items:center;
+  justify-content:space-between;padding:0 12px;z-index:20;pointer-events:none}
+.pill{background:rgba(255,255,255,.9);border-radius:16px;padding:7px 13px;font-weight:800;
+  color:#2a6fb3;box-shadow:0 3px 10px rgba(0,0,0,.12);display:flex;align-items:center;gap:7px}
+.pill svg{width:18px;height:18px}
+.voz{pointer-events:auto;cursor:pointer}
+
+/* ---------- TRILHA ---------- */
+#trilha{background:linear-gradient(180deg,#bfe8ff 0%,#dff3ff 42%,#eafbe6 100%)}
+#trilhaSVG{width:100%;height:100%}
+.node{cursor:pointer}
+.pulso{animation:pulso 1.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes pulso{0%,100%{transform:scale(1);opacity:.9}50%{transform:scale(1.16);opacity:.3}}
+.flut{animation:flut 3s ease-in-out infinite}
+@keyframes flut{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.byteWrap{animation:resp 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+@keyframes resp{0%,100%{transform:scale(1,1)}50%{transform:scale(1.03,.98)}}
+.sway{animation:sway 3.6s ease-in-out infinite;transform-box:fill-box;transform-origin:center bottom}
+@keyframes sway{0%,100%{transform:rotate(-1.6deg)}50%{transform:rotate(1.6deg)}}
+
+/* ---------- PARADA ---------- */
+#parada{background:linear-gradient(180deg,#cfeeff 0%,#e9fbdf 60%,#d7f0c4 100%)}
+#paradaSVG{width:100%;height:100%}
+.balao{position:absolute;left:50%;top:62px;transform:translateX(-50%);z-index:15;
+  background:#fff;border:3px solid #ffd45a;border-radius:20px;padding:12px 16px;max-width:80%;
+  font-size:16px;font-weight:700;color:#2a4a63;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.15);
+  opacity:0;transition:opacity .3s}
+.balao.on{opacity:1}
+.balao:after{content:"";position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);
+  border:8px solid transparent;border-top-color:#ffd45a}
+.acao{position:absolute;left:50%;bottom:26px;transform:translateX(-50%);z-index:15;
+  font-size:19px;font-weight:800;color:#fff;border:0;border-radius:18px;padding:15px 34px;cursor:pointer;
+  background:linear-gradient(180deg,#69d06a,#3fae4a);box-shadow:0 6px 0 #2e8a38;opacity:0;
+  transition:opacity .3s;pointer-events:none}
+.acao.on{opacity:1;pointer-events:auto}
+.acao.pulsa{animation:pulsaBtn 1s ease-in-out infinite}
+@keyframes pulsaBtn{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.07)}}
+.acao:active{transform:translateX(-50%) translateY(3px);box-shadow:0 3px 0 #2e8a38}
+.numerao{position:absolute;left:50%;top:32%;transform:translate(-50%,-50%);z-index:16;
+  font-size:120px;font-weight:900;color:#ffdc3a;-webkit-text-stroke:6px #b5751a;
+  pointer-events:none;opacity:0}
+#fx{position:absolute;inset:0;pointer-events:none;z-index:18}
+.reflex{position:absolute;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;
+  background:rgba(20,40,60,.55);opacity:0;pointer-events:none;transition:opacity .4s}
+.reflex.on{opacity:1;pointer-events:auto}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="nome" class="tela on">
+    <div class="card">
+      <div id="byteHi" style="height:96px"></div>
+      <h1>A Vila que Acorda</h1>
+      <p>O Byte precisa de você pra acordar a vila. Como você se chama?</p>
+      <input id="nin" maxlength="16" placeholder="seu nome" autocomplete="off">
+      <button class="btn" id="nbt">Começar</button>
+    </div>
+  </div>
+
+  <div id="trilha" class="tela">
+    <div class="top">
+      <div class="pill" id="pilhaProg">Paradas: 0/5</div>
+      <div class="pill voz" id="btVoz">
+        <svg viewBox="0 0 24 24"><path fill="#2a6fb3" d="M4 9v6h4l5 5V4L8 9H4zm12 3a4 4 0 00-2-3.5v7A4 4 0 0016 12z"/></svg>
+        Ouvir
+      </div>
+    </div>
+    <div id="trilhaSVG"></div>
+  </div>
+
+  <div id="parada" class="tela">
+    <div class="top">
+      <div class="pill" id="pilhaVolta" style="pointer-events:auto;cursor:pointer">‹ Trilha</div>
+      <div class="pill" id="pilhaCesta">Maçãs: 0</div>
+    </div>
+    <div id="paradaSVG"></div>
+    <div class="numerao" id="numerao">0</div>
+    <div class="balao" id="balao"></div>
+    <button class="acao" id="acao"></button>
+    <canvas id="fx"></canvas>
+    <div class="reflex" id="reflex">
+      <div class="card">
+        <div id="byteFim" style="height:88px"></div>
+        <h1 id="reflexT">Você descobriu!</h1>
+        <p id="reflexP">Juntar as duas cestas é o mesmo que somar.</p>
+        <button class="btn" id="reflexBt">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script src="app.js"></script>
+</body></html>
