@@ -161,12 +161,13 @@ function renderTrilha() {
     { parede: '#a7d98a', telha: '#5a9a44', porta: '#4a6a34' },
     { parede: '#c9a7e6', telha: '#7a52b0', porta: '#523a7a' }
   ];
-  // vila lá em cima: casinhas cinzas que ganham cor conforme paradas feitas
+  // vila lá em cima, SENTADA num morro (não flutua) — casinhas cinzas que ganham cor
+  const hillY = x => { const t = x / 500; return 158 * ((1 - t) * (1 - t) + t * t) + 176 * t * (1 - t); };
   let vila = '';
-  const vx = [110, 175, 250, 320, 385];
+  const vx = [95, 160, 225, 290, 355];
   for (let i = 0; i < NPARADAS; i++) {
     const acesa = feito(i);
-    vila += `<g style="${acesa ? '' : 'filter:grayscale(1) brightness(1.05);opacity:.72'}">${casinha(vx[i], 92 + (i % 2) * 6, 0.85, cores[i])}</g>`;
+    vila += `<g style="${acesa ? '' : 'filter:grayscale(1) brightness(1.05);opacity:.72'}">${casinha(vx[i], hillY(vx[i]) - 20, 0.78, cores[i])}</g>`;
   }
   // caminho serpenteando de baixo (parada 1) até a vila
   const pts = [[250, 815], [150, 690], [330, 575], [160, 455], [330, 335]];
@@ -202,11 +203,13 @@ function renderTrilha() {
   $('trilhaSVG').innerHTML =
     `<svg viewBox="0 0 500 900" preserveAspectRatio="xMidYMid meet" width="100%" height="100%">
       <defs><radialGradient id="sol" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff6c8"/><stop offset="1" stop-color="#fff6c8" stop-opacity="0"/></radialGradient></defs>
-      <circle cx="420" cy="90" r="40" fill="#ffe27a"/><circle cx="420" cy="90" r="90" fill="url(#sol)"/>
-      ${nuvem(120, 70, 1, .9)}${nuvem(300, 150, .8, .8)}
-      <path d="M0 250 Q250 190 500 250 L500 900 L0 900 Z" fill="#bfe6a0"/>
-      <path d="M0 340 Q250 290 500 340 L500 900 L0 900 Z" fill="#a6da86"/>
+      <circle cx="466" cy="46" r="26" fill="#ffe27a"/><circle cx="466" cy="46" r="50" fill="url(#sol)"/>
+      ${nuvem(110, 90, .9, .85)}${nuvem(340, 60, .7, .8)}
+      <path d="M0 158 Q250 88 500 158 L500 250 L0 250 Z" fill="#c6e7a4"/>
+      <path d="M0 172 Q250 108 500 172" stroke="#b6df8f" stroke-width="3" fill="none" opacity=".6"/>
       ${vila}
+      <path d="M0 300 Q250 250 500 300 L500 900 L0 900 Z" fill="#bfe6a0"/>
+      <path d="M0 384 Q250 334 500 384 L500 900 L0 900 Z" fill="#a6da86"/>
       <path d="${d}" stroke="#e9d9a8" stroke-width="30" fill="none" stroke-linecap="round"/>
       <path d="${d}" stroke="#f6ecc9" stroke-width="20" fill="none" stroke-linecap="round" stroke-dasharray="2 26"/>
       ${nodes}${byte}
